@@ -63,6 +63,11 @@ def enhsto14(str, seed = 9):
         s1 = s1[:z("E")] + "24" + s1[z("E") + 2:]
     return s1
 
+def s21enh(s1):
+    s1 = s1[:z("E")] + "24" + s1[z("E") + 2:]
+    s1 = s1[:z("E2")] + "24" + s1[z("E2") + 2:]
+    return s1
+
 def enhgmato14(str, seed = 9):
     s1 = gmato14(str, seed)
     if s1[z("H")] != "4":
@@ -70,8 +75,9 @@ def enhgmato14(str, seed = 9):
     return s1
 
 # X class
-def gmato14(str, seed = 9):
-    # Pass str as GMA list
+def gmato14(str1, seed = 9):
+    # separate by :
+    str = str1.split(":")
     j = 0; str14 = ""
     for i in ['G', 'M', 'A']:
         k = gma[gma['Component'] == i]
@@ -128,6 +134,24 @@ def sxhybrid(sstr, xstr, seed = 0):
     for i in range(len(s1)):
         f1 = f1 + max(s1[i], x1[i])
     return f1
+
+def univ(str1, seed, key, vent = 0, str2 = ""):
+    # key is: A, S, X, XU, AS, AX, SX
+    if key == "A":
+        return ampto14(str1)
+    elif key == "S":
+        return sto14(str1, seed)
+    elif key == "X":
+        return gmato14(str1, seed)
+    elif key == "XU":
+        return upperxto14(str1, seed, vent)
+    elif key == "AS":
+        return ashybrid(str1, str2, seed)
+    elif key == "AX":
+        return axhybrid(str1, str2, seed)
+    elif key == "SX":
+        return sxhybrid(str1, str2, seed)
+    return "Check key value."
 
 # to simplify
 def comp(str1, ch, upper, split = 0):
@@ -265,7 +289,7 @@ def getinputs(str14, isx = False, isxa = False):
     if int(str21[z("E2")]) <= 3 or int(str21[z("F2")]) <= 3:
         inputs.append("RH01")
     if int(str21[z("E2")]) <= 2 or int(str21[z("F2")]) <= 2:
-        inputs.append("LH02")
+        inputs.append("RH02")
     if (int(str21[z("E2")]) <= 2 and int(str21[z("F2")]) <= 2) or int(str21[z("E2")]) <= 1 or (int(str21[z("G2")]) <= 3 and (int(str21[z("E2")]) <= 2 or int(str21[z("F2")]) <= 1)):
         inputs.append("RH10")
     # priority RH for xH
