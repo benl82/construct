@@ -92,7 +92,7 @@ def gmato14(str1, seed = 9):
     return str14 + "-000-00"
 
 def upperxto14(val, seed = 9, vent = 0):
-    k = upperx[upperx['Value'] == val]
+    k = upperx[upperx['Value'] == int(val)]
     str1 = ""; str2 = ""
     for index, row in k.iterrows():
         if seed <= row['MaxSeed']:
@@ -100,9 +100,9 @@ def upperxto14(val, seed = 9, vent = 0):
             str2 = row['string2']
             break
     if str2 == "SYMM":
-        return str1 + str(vent) + str(val % 10 - 1) + "-00"
+        return str1 + str(vent) + str(int(val) % 10 - 1) + "-00"
     else:
-        return str1 + str(vent) + str(val % 10 - 1) + "-20-" + str2
+        return str1 + str(vent) + str(int(val) % 10 - 1) + "-20-" + str2
 
 # Hybrids
 def ashybrid(astr, sstr, seed = 0, enh = False):

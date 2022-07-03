@@ -1,42 +1,11 @@
-from re import I
 import all14 as src
 import pandas as pd
 import copy
 import numpy as np
-intrepid = (11, 0, "XU", 0, "", False, False)
-kaga = (11, 5, "XU", 0, "", True, False)
-spica = (12, 8, "XU", 0, "", True, False)
-diana = (21, 2, "XU", 0, "", True, False) # person C
-ingrid = (21, 4, "XU", 0, "", True, False)
-lara = (22, 8, "XU", 0, "", True, False)
-kelly = (33, 5, "XU", 0, "", True, False)
-audrey = (33, 9, "XU", 0, "", False, False)
-claire = (42, 2, "XU", 0, "", True, False)
-marin = (44, 3, "XU", 1, "", False, False) # person B
-sera = (45, 5, "XU", 0, "", True, True)
-selica = (53, 5, "XU", 0, "", True, True)
-jade = (54, 5, "XU", 0, "", True, False)
-ayaka = (55, 5, "XU", 0, "", True, True) # person A
-ellie = (55, 9, "XU", 0, "", True, True)
-
-tiffany = ("C4", 9, "S", 0, "", False, False) # person D
-keqing = ("C3", 9, "S", 0, "", False, False)
-amelie = ("C2", 9, "S", 0, "", False, False)
-mia = ("C1", 7, "S", 0, "", False, False)
-ahri = ("C1", 9, "S", 0, "", False, False)
-ruby = ("1C", 2, "S", 1, "", False, False)
-pyrrha = ("C1V", 3, "S", 1, "", False, False)
-akari = ("C1V", 9, "S", 1, "", False, False)
-eula = ("CX12", 0, "S", 0, "", False, False)
-symmetra = ("CX12", 9, "S", 0, "", False, False)
-cori = ("1B", 0, "S", 1, "", False, False)
-fasca = ("1B", 9, "S", 1, "", False, False)
-laffey = ("CX5", 0, "S", 0, "", False, False)
-athena = ("CX5", 9, "S", 0, "", False, False)
-sayu = ("C1VCX5", 0, "S", 0, "", False, False)
-marina = ("C1VCX5", 0, "S", 0, "", False, False)
-alyx = ("C1H", 0, "S", 0, "", False, False)
-korrina = ("1A", 0, "S", 1, "", False, False)
+sgrraw = pd.read_csv('sgrraw.txt', sep = "\t")
+pd.set_option('display.max_rows', 500)
+pd.set_option('display.max_columns', 500)
+pd.set_option('display.width', 5000) # these dont fucking work...
 
 controls = pd.read_csv('tech_controls.txt', sep = '\t')
 cursorprio = ["RH21", "LH21", "RH31", "LH31", "SP31", "EE01"]
@@ -151,17 +120,43 @@ def build(person):
     for i in np.unique(reserved):
         if i != "SP21>1" and i != "EE01>1":
             inst.remove(i)
-    if enh:
-        inst.remove("HD11")
     return (reserved, inst, mapped, enh, lcrc)
-    
+
+def uniq(x):
+    inds = np.unique(x, return_index = True)[1]
+    return [x[i] for i in sorted(inds)]
+
+def buildsgr(person):
+    kx = sgrraw[sgrraw["ShortName"].isin(person)]
+    kx = kx.reset_index()
+    df = pd.DataFrame(columns = ["Name", "Reserved", "Available", "Mapped", "Enhanced", "LC RC"])
+    for index, row in kx.iterrows():
+        x = [row['ShortName']]
+        x.extend(build((row['Source'], row['Seed'], row['Key'], row['Vent'], "", row['XCP'], row['ATH'])))
+        df.loc[len(df.index)] = x
+    df['Reserved'] = df.apply(lambda row: uniq(row.Reserved), axis = 1)
+    return df
+
 def universal(person):
     pass
 
 #print(inputs(*kaga))
-# print(getabsdir(tiffany))
-#print(build9(tiffany))
-print(build(sera))
-print(build(marin))
+night71 = ["Ayaka", "Seraphine", "Zuikaku", "Pyra", "Federica", "Claire R", "Fujin", "Diana", "Ingrid", "Kaga"]
+#print(buildsgr(night71)['Reserved'])
+df1 = sgrraw[sgrraw['Key'] == "XU"]
+df1 = df1.reset_index()
+night72 = list(df1["ShortName"])
+df2 = buildsgr(night72)
 
-#print(getabsdir(tiffany))
+hasrf10 = []
+hasotherdir = []; hasnodir = []
+for index, row in df2.iterrows():
+    if "RF10" in row["Reserved"] or "LF10" in row["Reserved"]:
+        hasrf10.append(index)
+    elif ("RF01" in row["Reserved"] or "LF01" in row["Reserved"]) and ("HD00" not in row["Reserved"]) and len(row["Reserved"]) <= 5:
+        hasnodir.append(index)
+    else:
+        hasotherdir.append(index)
+print(df2.iloc[hasrf10])
+print(df2.iloc[hasnodir])
+print(df2.iloc[hasotherdir])
