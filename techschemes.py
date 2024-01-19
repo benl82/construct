@@ -139,24 +139,3 @@ def buildsgr(person):
 
 def universal(person):
     pass
-
-#print(inputs(*kaga))
-night71 = ["Ayaka", "Seraphine", "Zuikaku", "Pyra", "Federica", "Claire R", "Fujin", "Diana", "Ingrid", "Kaga"]
-#print(buildsgr(night71)['Reserved'])
-df1 = sgrraw[sgrraw['Key'] == "XU"]
-df1 = df1.reset_index()
-night72 = list(df1["ShortName"])
-df2 = buildsgr(night72)
-
-hasrf10 = []
-hasotherdir = []; hasnodir = []
-for index, row in df2.iterrows():
-    if "RF10" in row["Reserved"] or "LF10" in row["Reserved"]:
-        hasrf10.append(index)
-    elif ("RF01" in row["Reserved"] or "LF01" in row["Reserved"]) and ("HD00" not in row["Reserved"]) and len(row["Reserved"]) <= 5:
-        hasnodir.append(index)
-    else:
-        hasotherdir.append(index)
-print(df2.iloc[hasrf10])
-print(df2.iloc[hasnodir])
-print(df2.iloc[hasotherdir])
